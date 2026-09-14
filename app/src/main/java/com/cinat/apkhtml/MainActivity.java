@@ -325,17 +325,18 @@ public class MainActivity extends Activity {
 
     private void merge(List<Game> embedded, List<Game> online) {
         games = new ArrayList<>();
-        if (online != null) {
-            for (Game g : online) {
-                if (g.url != null && !g.url.isEmpty() && g.url.startsWith("http")) games.add(g);
-            }
+        List<Game> src = (online != null && !online.isEmpty()) ? online : embedded;
+        for (Game g : src) {
+            if (g.url != null && !g.url.isEmpty() && g.url.startsWith("http")) games.add(g);
         }
-        for (Game g : embedded) {
-            boolean dup = false;
-            for (Game e : games) {
-                if (e.id == g.id || e.url != null && g.url != null && e.url.equals(g.url)) { dup = true; break; }
+        if (online != null && !online.isEmpty()) {
+            for (Game g : embedded) {
+                boolean dup = false;
+                for (Game e : games) {
+                    if (e.id == g.id || e.url != null && g.url != null && e.url.equals(g.url)) { dup = true; break; }
+                }
+                if (!dup) games.add(g);
             }
-            if (!dup) games.add(g);
         }
         Collections.sort(games, new Comparator<Game>() {
             @Override public int compare(Game a, Game b) { return b.popularity - a.popularity; }
@@ -639,9 +640,8 @@ public class MainActivity extends Activity {
         new AlertDialog.Builder(this)
             .setTitle("ApkHTML v" + version)
             .setMessage(
-                "Bağımsız APK kütüphanesi. Siteye bağlı değildir; katalog uygulama içinde gömülüdür.\n\n" +
-                "Çevrimdışı katalog: 15 oyun + kapak/ekran görüntüleri.\n" +
-                "Otomatik güncelleme: İnternetteyken sitedeki catalog.json ile senkronize olur, yeni oyunlar otomatik eklenir.\n\n" +
+                "Bağımsız APK kütüphanesi. Katalog internetten güncellenir; internete erişim yoksa gömülü yedeği gösterilir.\n\n" +
+                "Oyunlar sitedeki sayfalarından indirilir; uygulamadaki 'Bu Sayfaya Git' butonu tarayıcıda oyun sayfasını açar.\n\n" +
                 "🔐 Sertifika SHA-256:\n" + fp + "\n\n" +
                 "İmza yayınlananla eşleşmezse dosya değiştirilmiştir, kurma!")
             .setPositiveButton("Tamam", null)

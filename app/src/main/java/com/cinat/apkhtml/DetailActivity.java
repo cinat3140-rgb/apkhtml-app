@@ -1,9 +1,11 @@
 package com.cinat.apkhtml;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -22,6 +24,7 @@ import java.io.InputStream;
 
 public class DetailActivity extends Activity {
 
+    private static final String SITE_BASE = "https://cinat3140-rgb.github.io/apkhtml/#/oyun/";
     private MainActivity.Game game;
 
     @Override
@@ -44,6 +47,7 @@ public class DetailActivity extends Activity {
             game.packageName = o.optString("packageName");
             game.url = o.optString("url");
             game.sha256 = o.optString("sha256");
+            game.coverUrl = o.optString("coverUrl");
         } catch (Exception ignored) {}
 
         LinearLayout root = new LinearLayout(this);
@@ -61,7 +65,21 @@ public class DetailActivity extends Activity {
         ImageView cover = new ImageView(this);
         cover.setScaleType(ImageView.ScaleType.CENTER_CROP);
         cover.setBackgroundColor(Color.rgb(226, 232, 240));
-        Bitmap bm = loadCover();
+        Bitmap bm = null;
+        String coverUrl = game.coverUrl;
+        if (coverUrl != null && !coverUrl.isEmpty()) {
+            if (!coverUrl.startsWith("http")) coverUrl = "https://cinat3140-rgb.github.io/apkhtml/" + coverUrl;
+            try {
+                java.net.HttpURLConnection uc = (java.net.HttpURLConnection) new java.net.URL(coverUrl).openConnection();
+                uc.setConnectTimeout(5000);
+                uc.setReadTimeout(5000);
+                if (uc.getResponseCode() == 200) {
+                    bm = BitmapFactory.decodeStream(uc.getInputStream());
+                }
+                uc.disconnect();
+            } catch (Exception ignored) {}
+        }
+        if (bm == null) bm = loadCover();
         if (bm != null) cover.setImageBitmap(bm);
         content.addView(cover, new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, dp(190)));
@@ -96,24 +114,30 @@ public class DetailActivity extends Activity {
 
         content.addView(titleBox);
 
-        /* ---- download button ---- */
-        TextView dlBtn = new TextView(this);
-        dlBtn.setText("⬇ APK İndir");
-        dlBtn.setTextColor(Color.WHITE);
-        dlBtn.setTextSize(17);
-        dlBtn.setTypeface(null, android.graphics.Typeface.BOLD);
-        dlBtn.setGravity(Gravity.CENTER);
-        dlBtn.setBackgroundColor(Color.rgb(37, 99, 235));
-        dlBtn.setPadding(dp(16), dp(14), dp(16), dp(14));
-        dlBtn.setOnClickListener(new View.OnClickListener() {
+        /* ---- site navigation button ---- */
+        TextView siteBtn = new TextView(this);
+        siteBtn.setText("Bu Sayfaya Git");
+        siteBtn.setTextColor(Color.WHITE);
+        siteBtn.setTextSize(17);
+        siteBtn.setTypeface(null, android.graphics.Typeface.BOLD);
+        siteBtn.setGravity(Gravity.CENTER);
+        siteBtn.setBackgroundColor(Color.rgb(16, 185, 129));
+        siteBtn.setPadding(dp(16), dp(14), dp(16), dp(14));
+        siteBtn.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                MainActivity.downloadGame(DetailActivity.this, game);
+                String siteUrl = SITE_BASE + game.id;
+                try {
+                    Intent browser = new Intent(Intent.ACTION_VIEW, Uri.parse(siteUrl));
+                    startActivity(browser);
+                } catch (Exception e) {
+                    Toast.makeText(DetailActivity.this, "Tarayıcı açılamadı.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         LinearLayout.LayoutParams lpBtn = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         lpBtn.setMargins(dp(18), dp(8), dp(18), dp(4));
-        content.addView(dlBtn, lpBtn);
+        content.addView(siteBtn, lpBtn);
 
         /* ---- description ---- */
         if (game.description != null && !game.description.isEmpty()) {
