@@ -208,7 +208,7 @@ public class MainActivity extends Activity {
         } catch (Exception ignored) {
             fp = "—";
         }
-        String version = "1.2.0";
+        String version = "1.3.0";
         try {
             version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
         } catch (Exception ignored) {}
