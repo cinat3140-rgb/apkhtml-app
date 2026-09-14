@@ -52,7 +52,7 @@ public class SplashActivity extends Activity {
         root.addView(sub, lpSub);
 
         TextView ver = new TextView(this);
-        ver.setText("v1.1.0");
+        ver.setText("v2.0.0");
         ver.setTextColor(0xCCFFFFFF);
         ver.setTextSize(13);
         LinearLayout.LayoutParams lpVer = new LinearLayout.LayoutParams(

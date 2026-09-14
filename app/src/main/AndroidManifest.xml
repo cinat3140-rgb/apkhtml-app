@@ -31,5 +31,10 @@
             android:exported="false"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:launchMode="singleTask" />
+
+        <activity
+            android:name=".DetailActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize" />
     </application>
 </manifest>
