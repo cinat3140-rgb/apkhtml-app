@@ -22,7 +22,7 @@
 15-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:6:9-35
 16
 17    <application
-17-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:8:5-26:19
+17-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:8:5-34:19
 18        android:allowBackup="true"
 18-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:12:9-35
 19        android:extractNativeLibs="true"
@@ -39,24 +39,38 @@
 25        android:usesCleartextTraffic="false" >
 25-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:15:9-45
 26        <activity
-26-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:17:9-25:20
-27            android:name="com.cinat.apkhtml.MainActivity"
-27-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:18:13-41
-28            android:configChanges="orientation|screenSize|keyboardHidden"
-28-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:20:13-74
-29            android:exported="true" >
+26-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:17:9-27:20
+27            android:name="com.cinat.apkhtml.SplashActivity"
+27-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:18:13-43
+28            android:configChanges="orientation|screenSize"
+28-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:22:13-59
+29            android:exported="true"
 29-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:19:13-36
-30            <intent-filter>
-30-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:21:13-24:29
-31                <action android:name="android.intent.action.MAIN" />
-31-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:22:17-69
-31-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:22:25-66
-32
-33                <category android:name="android.intent.category.LAUNCHER" />
-33-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:23:17-77
-33-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:23:27-74
-34            </intent-filter>
-35        </activity>
-36    </application>
-37
-38</manifest>
+30            android:screenOrientation="portrait"
+30-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:21:13-49
+31            android:theme="@style/SplashTheme" >
+31-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:20:13-47
+32            <intent-filter>
+32-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:23:13-26:29
+33                <action android:name="android.intent.action.MAIN" />
+33-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:24:17-69
+33-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:24:25-66
+34
+35                <category android:name="android.intent.category.LAUNCHER" />
+35-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:25:17-77
+35-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:25:27-74
+36            </intent-filter>
+37        </activity>
+38        <activity
+38-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:29:9-33:47
+39            android:name="com.cinat.apkhtml.MainActivity"
+39-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:30:13-41
+40            android:configChanges="orientation|screenSize|keyboardHidden"
+40-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:32:13-74
+41            android:exported="false"
+41-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:31:13-37
+42            android:launchMode="singleTask" />
+42-->C:\Users\PC\apkhtml-app\app\src\main\AndroidManifest.xml:33:13-44
+43    </application>
+44
+45</manifest>

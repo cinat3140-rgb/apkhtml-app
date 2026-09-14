@@ -1,42 +1,70 @@
 [
     {
-        "merged": "com.cinat.apkhtml.app-release-4:/mipmap-xxhdpi_ic_launcher_round.png.flat",
-        "source": "com.cinat.apkhtml.app-main-5:/mipmap-xxhdpi/ic_launcher_round.png"
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-release-4:\\mipmap-mdpi_ic_launcher.png.flat",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-main-5:\\mipmap-mdpi\\ic_launcher.png"
     },
     {
-        "merged": "com.cinat.apkhtml.app-release-4:/mipmap-xhdpi_ic_launcher.png.flat",
-        "source": "com.cinat.apkhtml.app-main-5:/mipmap-xhdpi/ic_launcher.png"
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-release-4:\\mipmap-hdpi_ic_launcher.png.flat",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-main-5:\\mipmap-hdpi\\ic_launcher.png"
     },
     {
-        "merged": "com.cinat.apkhtml.app-release-4:/mipmap-hdpi_ic_launcher_round.png.flat",
-        "source": "com.cinat.apkhtml.app-main-5:/mipmap-hdpi/ic_launcher_round.png"
+        "merged": "com.cinat.apkhtml.app-release-4:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.cinat.apkhtml.app-main-5:/drawable/ic_launcher_background.xml"
     },
     {
-        "merged": "com.cinat.apkhtml.app-release-4:/mipmap-xxxhdpi_ic_launcher_round.png.flat",
-        "source": "com.cinat.apkhtml.app-main-5:/mipmap-xxxhdpi/ic_launcher_round.png"
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-release-4:\\mipmap-xxxhdpi_ic_launcher_round.png.flat",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-main-5:\\mipmap-xxxhdpi\\ic_launcher_round.png"
     },
     {
-        "merged": "com.cinat.apkhtml.app-release-4:/mipmap-mdpi_ic_launcher_round.png.flat",
-        "source": "com.cinat.apkhtml.app-main-5:/mipmap-mdpi/ic_launcher_round.png"
+        "merged": "com.cinat.apkhtml.app-release-4:/drawable_splash_bg.xml.flat",
+        "source": "com.cinat.apkhtml.app-main-5:/drawable/splash_bg.xml"
     },
     {
-        "merged": "com.cinat.apkhtml.app-release-4:/mipmap-mdpi_ic_launcher.png.flat",
-        "source": "com.cinat.apkhtml.app-main-5:/mipmap-mdpi/ic_launcher.png"
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-release-4:\\mipmap-mdpi_ic_launcher_round.png.flat",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-main-5:\\mipmap-mdpi\\ic_launcher_round.png"
     },
     {
-        "merged": "com.cinat.apkhtml.app-release-4:/mipmap-xxhdpi_ic_launcher.png.flat",
-        "source": "com.cinat.apkhtml.app-main-5:/mipmap-xxhdpi/ic_launcher.png"
+        "merged": "com.cinat.apkhtml.app-release-4:/drawable_splash_bg_color.xml.flat",
+        "source": "com.cinat.apkhtml.app-main-5:/drawable/splash_bg_color.xml"
     },
     {
-        "merged": "com.cinat.apkhtml.app-release-4:/mipmap-xxxhdpi_ic_launcher.png.flat",
-        "source": "com.cinat.apkhtml.app-main-5:/mipmap-xxxhdpi/ic_launcher.png"
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-release-4:\\mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-main-5:\\mipmap-hdpi\\ic_launcher_round.png"
     },
     {
-        "merged": "com.cinat.apkhtml.app-release-4:/mipmap-xhdpi_ic_launcher_round.png.flat",
-        "source": "com.cinat.apkhtml.app-main-5:/mipmap-xhdpi/ic_launcher_round.png"
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-release-4:\\mipmap-xhdpi_ic_launcher_round.png.flat",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-main-5:\\mipmap-xhdpi\\ic_launcher_round.png"
     },
     {
-        "merged": "com.cinat.apkhtml.app-release-4:/mipmap-hdpi_ic_launcher.png.flat",
-        "source": "com.cinat.apkhtml.app-main-5:/mipmap-hdpi/ic_launcher.png"
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-release-4:\\mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-main-5:\\mipmap-xxxhdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "com.cinat.apkhtml.app-release-4:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.cinat.apkhtml.app-main-5:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-release-4:\\mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-main-5:\\mipmap-xhdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "com.cinat.apkhtml.app-release-4:/drawable-nodpi_splash_logo.png.flat",
+        "source": "com.cinat.apkhtml.app-main-5:/drawable-nodpi/splash_logo.png"
+    },
+    {
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-release-4:\\mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-main-5:\\mipmap-xxhdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "com.cinat.apkhtml.app-release-4:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.cinat.apkhtml.app-main-5:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-release-4:\\mipmap-xxhdpi_ic_launcher_round.png.flat",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-main-5:\\mipmap-xxhdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "com.cinat.apkhtml.app-release-4:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.cinat.apkhtml.app-main-5:/mipmap-anydpi-v26/ic_launcher.xml"
     }
 ]

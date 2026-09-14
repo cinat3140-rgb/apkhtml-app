@@ -24,15 +24,22 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false" >
         <activity
-            android:name="com.cinat.apkhtml.MainActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:exported="true" >
+            android:name="com.cinat.apkhtml.SplashActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/SplashTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.cinat.apkhtml.MainActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="false"
+            android:launchMode="singleTask" />
     </application>
 
 </manifest>

@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.cinat.apkhtml.app-release-4:/values_values.arsc.flat",
+            "outputFile": "C:\\Users\\PC\\.gradle\\daemon\\8.14.1\\com.cinat.apkhtml.app-release-4:\\values_values.arsc.flat",
             "map": [
                 {
                     "source": "C:\\Users\\PC\\apkhtml-app\\app\\src\\main\\res\\values\\styles.xml",
@@ -30,6 +30,45 @@
                         "startOffsets": "16",
                         "endColumns": "44",
                         "endOffsets": "56"
+                    },
+                    "to": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "44",
+                        "endOffsets": "95"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "com.cinat.apkhtml.app-release-4:/values_values.arsc.flat",
+            "map": [
+                {
+                    "source": "C:\\Users\\PC\\apkhtml-app\\app\\src\\main\\res\\values\\styles.xml",
+                    "from": {
+                        "startLines": "1,7",
+                        "startColumns": "4,4",
+                        "startOffsets": "16,324",
+                        "endLines": "5,12",
+                        "endColumns": "12,12",
+                        "endOffsets": "318,673"
+                    },
+                    "to": {
+                        "startLines": "3,8",
+                        "startColumns": "4,4",
+                        "startOffsets": "100,407",
+                        "endLines": "7,13",
+                        "endColumns": "12,12",
+                        "endOffsets": "402,756"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\PC\\apkhtml-app\\app\\src\\main\\res\\values\\strings.xml",
+                    "from": {
+                        "startLines": "-1",
+                        "startColumns": "-1",
+                        "startOffsets": "-1"
                     },
                     "to": {
                         "startLines": "2",
