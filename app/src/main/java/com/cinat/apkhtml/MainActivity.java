@@ -137,6 +137,17 @@ public class MainActivity extends Activity {
         } else {
             loadHome();
         }
+
+        maybeShowWelcome();
+    }
+
+    private void maybeShowWelcome() {
+        android.content.SharedPreferences prefs = getSharedPreferences("apkhtml", MODE_PRIVATE);
+        boolean seen = prefs.getBoolean("welcome_seen_v12", false);
+        if (seen) return;
+        prefs.edit().putBoolean("welcome_seen_v12", true).apply();
+        webView.evaluateJavascript(
+            "location.href='file:///android_asset/welcome.html'", null);
     }
 
     @Override
@@ -144,6 +155,8 @@ public class MainActivity extends Activity {
         menu.add(0, 1, 0, "↻ Yenile");
         menu.add(0, 2, 0, "ℹ️ Hakkında & Güvenlik");
         menu.add(0, 4, 0, "🔒 Güvenlik Rehberi");
+        menu.add(0, 5, 0, "❓ Yardım & SSS");
+        menu.add(0, 6, 0, "💬 Topluluk");
         menu.add(0, 3, 0, "🌐 Tarayıcıda Aç");
         return true;
     }
@@ -160,6 +173,14 @@ public class MainActivity extends Activity {
             case 4:
                 webView.stopLoading();
                 webView.loadUrl("file:///android_asset/security.html");
+                return true;
+            case 5:
+                webView.stopLoading();
+                webView.loadUrl("file:///android_asset/help.html");
+                return true;
+            case 6:
+                webView.stopLoading();
+                webView.loadUrl("file:///android_asset/community.html");
                 return true;
             case 3:
                 openExternal(webView.getUrl() != null ? webView.getUrl() : HOME_URL);
@@ -187,7 +208,7 @@ public class MainActivity extends Activity {
         } catch (Exception ignored) {
             fp = "—";
         }
-        String version = "1.1.0";
+        String version = "1.2.0";
         try {
             version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
         } catch (Exception ignored) {}
@@ -247,10 +268,12 @@ public class MainActivity extends Activity {
                     "min-height:80vh;background:#f1f5f9;color:#0f172a;margin:0;padding:24px;text-align:center}" +
                     ".box{max-width:340px;background:#fff;border-radius:18px;padding:30px;box-shadow:0 10px 30px rgba(0,0,0,.08)}" +
                     ".icon{font-size:48px;margin-bottom:10px}h1{font-size:20px;margin:0 0 8px}p{color:#64748b;font-size:14px;margin:0 0 18px}" +
-                    "button{background:#2563eb;color:#fff;border:0;border-radius:12px;padding:12px 20px;font-size:15px;font-weight:600}" +
+                    "button{background:#2563eb;color:#fff;border:0;border-radius:12px;padding:12px 20px;font-size:15px;font-weight:600;" +
+                    "display:inline-block;margin:0 6px 10px}" +
                     "</style></head><body><div class=\"box\"><div class=\"icon\">📡</div>" +
                     "<h1>İnternet bağlantısı yok</h1>" +
-                    "<p>Kataloğu görüntülemek için ağ bağlantın gerekli. Bağlantıyı kur ve tekrar dene.</p>" +
+                    "<p>Canlı kataloğa ulaşılamıyor. Gömülü yedek kataloğu görüntüleyebilir veya bağlantıyı kontrol ettikten sonra tekrar deneyebilirsin.</p>" +
+                    "<button onclick=\"location.href='file:///android_asset/offline/index.html'\">📦 Gömülü Kataloğu Aç</button>" +
                     "<button onclick=\"location.reload()\">↻ Tekrar Dene</button></div></body></html>";
                 webView.loadData(html, "text/html; charset=utf-8", null);
             }
@@ -262,6 +285,7 @@ public class MainActivity extends Activity {
     }
 
     private boolean handleUrl(String url) {
+        if (url.startsWith("file:///android_asset/")) return false;
         Uri uri = Uri.parse(url);
         String host = uri.getHost();
         if (host != null && (host.equals(SITE_HOST) || host.endsWith("." + SITE_HOST))) {

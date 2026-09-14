@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ApkHTML'e Hoş Geldin</title>
+  <style>
+    @font-face { font-family: 'Inter'; src: url('file:///android_asset/fonts/Inter-Regular.ttf') format('truetype'); font-weight: 100 900; font-display: swap; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: linear-gradient(160deg, #2563EB 0%, #1D4ED8 60%, #172554 100%); color: #fff; min-height: 100vh; display: flex; flex-direction: column; }
+    .wrap { flex: 1; max-width: 640px; margin: 0 auto; padding: 48px 24px 24px; width: 100%; display: flex; flex-direction: column; }
+    .logo { width: 96px; height: 96px; margin: 0 auto 16px; border-radius: 24px; background: rgba(255,255,255,.15); display: flex; align-items: center; justify-content: center; font-size: 48px; }
+    h1 { text-align: center; font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; }
+    .tagline { text-align: center; color: rgba(255,255,255,.8); font-size: 0.95rem; margin-bottom: 32px; }
+    .steps { display: grid; gap: 14px; }
+    .step { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2); border-radius: 16px; padding: 18px 20px; display: flex; gap: 14px; align-items: flex-start; }
+    .step .n { flex: 0 0 auto; width: 36px; height: 36px; border-radius: 50%; background: #fff; color: #2563EB; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+    .step h3 { font-size: 1.02rem; margin-bottom: 3px; }
+    .step p { color: rgba(255,255,255,.82); font-size: 0.88rem; }
+    .trust { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .trust span { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); padding: 6px 14px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; }
+    .actions { margin-top: 30px; display: grid; gap: 12px; }
+    .btn { display: block; text-align: center; border: 0; border-radius: 14px; padding: 15px 18px; font-size: 1rem; font-weight: 700; cursor: pointer; text-decoration: none; font-family: inherit; }
+    .btn-primary { background: #fff; color: #2563EB; }
+    .btn-ghost { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.3); }
+    .foot { text-align: center; color: rgba(255,255,255,.6); font-size: 0.75rem; margin-top: 22px; }
+    .badge { text-align: center; margin-bottom: 8px; font-size: 0.8rem; font-weight: 700; color: #fff; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); padding: 5px 14px; border-radius: 999px; display: inline-block; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">🤖</div>
+  <h1>ApkHTML'e Hoş Geldin</h1>
+  <p class="tagline">Android 5.0+ cihazlar için hafif, güvenilir APK kütüphanesi</p>
+  <div style="text-align:center;margin-bottom:20px"><span class="badge">✅ İmzalı · Açık Kaynak · Reklamsız · İzlemesiz</span></div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="n">1</div>
+      <div>
+        <h3>Kataloğa göz at</h3>
+        <p>Binlerce kategorideki oyunları keşfet; kapak, boyut ve sürüm bilgileriyle.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="n">2</div>
+      <div>
+        <h3>Ara & incele</h3>
+        <p>İstediğin oyunu arama kutusuyla bul, detaylı özellik ve uyumluluk bilgilerini gör.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="n">3</div>
+      <div>
+        <h3>Tek dokunuşla indir</h3>
+        <p>APK dosyaları Android'in resmi indirme yöneticisi ile güvenle iner.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="trust">
+    <span>🔐 SHA-256 ile doğrulanmış</span>
+    <span>🔑 İmzalı APK</span>
+    <span>📡 İnternetsiz çalışır</span>
+    <span>📉 5 MB altı</span>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="location.href='file:///android_asset/offline/index.html'">🚀 Başla</button>
+    <button class="btn btn-ghost" onclick="location.href='https://cinat3140-rgb.github.io/apkhtml/'">🌐 Canlı Sitede Aç</button>
+  </div>
+
+  <p class="foot">Cinat3140 Topluluğu · Soruların mı var? <a href="https://github.com/cinat3140-rgb/apkhtml-app/issues" style="color:#93c5fd">GitHub Issues</a> · v1.2.0</p>
+</div>
+</body>
+</html>
