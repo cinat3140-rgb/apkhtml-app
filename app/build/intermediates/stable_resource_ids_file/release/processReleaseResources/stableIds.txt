@@ -1,0 +1,4 @@
+com.cinat.apkhtml:style/AppTheme = 0x7f030000
+com.cinat.apkhtml:string/app_name = 0x7f020000
+com.cinat.apkhtml:mipmap/ic_launcher_round = 0x7f010001
+com.cinat.apkhtml:mipmap/ic_launcher = 0x7f010000
