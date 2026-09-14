@@ -325,17 +325,13 @@ public class MainActivity extends Activity {
 
     private void merge(List<Game> embedded, List<Game> online) {
         games = new ArrayList<>();
-        List<Game> src = (online != null && !online.isEmpty()) ? online : embedded;
-        for (Game g : src) {
-            if (g.url != null && !g.url.isEmpty() && g.url.startsWith("http")) games.add(g);
-        }
-        if (online != null && !online.isEmpty()) {
+        if (online != null) {
+            for (Game g : online) {
+                if (g.url != null && !g.url.isEmpty() && g.url.startsWith("http")) games.add(g);
+            }
+        } else {
             for (Game g : embedded) {
-                boolean dup = false;
-                for (Game e : games) {
-                    if (e.id == g.id || e.url != null && g.url != null && e.url.equals(g.url)) { dup = true; break; }
-                }
-                if (!dup) games.add(g);
+                if (g.url != null && !g.url.isEmpty() && g.url.startsWith("http")) games.add(g);
             }
         }
         Collections.sort(games, new Comparator<Game>() {
@@ -413,7 +409,7 @@ public class MainActivity extends Activity {
                 }
             }
         } catch (Exception e) {
-            // offline or broken
+            return null;
         } finally {
             if (c != null) c.disconnect();
         }
