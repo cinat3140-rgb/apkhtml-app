@@ -11,6 +11,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Outline;
+import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -19,8 +21,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -55,6 +59,16 @@ import java.util.concurrent.Executors;
 public class MainActivity extends Activity {
 
     private static final String CATALOG_URL = "https://cinat3140-rgb.github.io/apkhtml/catalog.json";
+
+    /* ---- tema ---- */
+    private static final int C_BG    = 0xFF0F172A;
+    private static final int C_CARD  = 0xFF1E293B;
+    private static final int C_CARD2 = 0xFF2A3A5C;
+    private static final int C_ACCENT = 0xFF38BDF8;
+    private static final int C_SUB   = 0xFF94A3B8;
+    private static final int C_MUTED = 0xFF64748B;
+    private static final int C_HDR1  = 0xFF1D4ED8;
+    private static final int C_HDR2  = 0xFF0C4A6E;
 
     private List<Game> games = new ArrayList<>();
     private List<Game> filtered = new ArrayList<>();
@@ -128,18 +142,25 @@ public class MainActivity extends Activity {
 
         root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(0xFFF1F5F9);
+        root.setBackgroundColor(C_BG);
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            getWindow().setStatusBarColor(C_HDR1);
+            getWindow().setNavigationBarColor(C_BG);
+        }
 
         /* ---- header ---- */
         LinearLayout header = new LinearLayout(this);
         header.setOrientation(LinearLayout.HORIZONTAL);
         header.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        header.setPadding(dp(16), dp(14), dp(8), dp(10));
-        header.setBackgroundColor(0xFF2563EB);
+        header.setPadding(dp(16), dp(14), dp(10), dp(14));
+        GradientDrawable headerBg = new GradientDrawable(
+            GradientDrawable.Orientation.TL_BR, new int[]{C_HDR1, C_HDR2});
+        header.setBackground(headerBg);
 
         ImageView logo = new ImageView(this);
         logo.setImageResource(R.drawable.splash_logo);
-        LinearLayout.LayoutParams lpLogo = new LinearLayout.LayoutParams(dp(44), dp(44));
+        LinearLayout.LayoutParams lpLogo = new LinearLayout.LayoutParams(dp(46), dp(46));
         header.addView(logo, lpLogo);
 
         LinearLayout titleBox = new LinearLayout(this);
@@ -148,7 +169,7 @@ public class MainActivity extends Activity {
         TextView title = new TextView(this);
         title.setText("ApkHTML");
         title.setTextColor(0xFFFFFFFF);
-        title.setTextSize(21);
+        title.setTextSize(22);
         title.setTypeface(null, android.graphics.Typeface.BOLD);
         titleBox.addView(title);
         TextView sub = new TextView(this);
@@ -158,12 +179,7 @@ public class MainActivity extends Activity {
         titleBox.addView(sub);
         header.addView(titleBox, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
 
-        TextView refreshBtn = new TextView(this);
-        refreshBtn.setText("↻");
-        refreshBtn.setTextColor(0xFFFFFFFF);
-        refreshBtn.setTextSize(26);
-        refreshBtn.setGravity(android.view.Gravity.CENTER);
-        refreshBtn.setPadding(dp(14), dp(4), dp(14), dp(4));
+        TextView refreshBtn = headerIcon("↻");
         refreshBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -173,12 +189,7 @@ public class MainActivity extends Activity {
         });
         header.addView(refreshBtn);
 
-        TextView moreBtn = new TextView(this);
-        moreBtn.setText("⋯");
-        moreBtn.setTextColor(0xFFFFFFFF);
-        moreBtn.setTextSize(26);
-        moreBtn.setGravity(android.view.Gravity.CENTER);
-        moreBtn.setPadding(dp(12), dp(4), dp(12), dp(4));
+        TextView moreBtn = headerIcon("⋯");
         moreBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -193,20 +204,24 @@ public class MainActivity extends Activity {
         /* ---- search row ---- */
         LinearLayout searchRow = new LinearLayout(this);
         searchRow.setOrientation(LinearLayout.HORIZONTAL);
-        searchRow.setPadding(dp(12), dp(10), dp(12), 0);
+        searchRow.setGravity(Gravity.CENTER_VERTICAL);
+        searchRow.setPadding(dp(16), dp(14), dp(16), 0);
 
         searchInput = new EditText(this);
         searchInput.setHint("Oyun ara… (ör. Among Us)");
         searchInput.setSingleLine(true);
         searchInput.setTextSize(15);
-        searchInput.setBackgroundResource(android.R.drawable.editbox_background);
-        searchInput.setHintTextColor(0xFF94A3B8);
+        searchInput.setTextColor(0xFFFFFFFF);
+        searchInput.setHintTextColor(0x8894A3B8);
+        searchInput.setBackground(roundRect(0xFF1E293B, 24));
+        searchInput.setPadding(dp(18), dp(12), dp(18), dp(12));
+        searchInput.setGravity(Gravity.CENTER_VERTICAL);
         searchInput.addTextChangedListener(new android.text.TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
             @Override public void onTextChanged(CharSequence s, int st, int b, int c) { applyFilters(); }
             @Override public void afterTextChanged(android.text.Editable s) {}
         });
-        searchRow.addView(searchInput, new LinearLayout.LayoutParams(0, dp(46), 1));
+        searchRow.addView(searchInput, new LinearLayout.LayoutParams(0, dp(52), 1));
 
         TextView clearBtn = new TextView(this);
         clearBtn.setText("✕");
@@ -228,24 +243,26 @@ public class MainActivity extends Activity {
         chipScroll = new HorizontalScrollViewWrap(this);
         LinearLayout chipRow = new LinearLayout(this);
         chipRow.setOrientation(LinearLayout.HORIZONTAL);
-        chipRow.setPadding(dp(12), dp(10), dp(12), 0);
+        chipRow.setPadding(dp(16), dp(12), dp(16), 0);
         for (int i = 0; i < cats.length; i++) {
             final int idx = i - 1;
             final TextView chip = new TextView(this);
             chip.setText(cats[i]);
             chip.setTextSize(13);
-            chip.setGravity(android.view.Gravity.CENTER);
-            chip.setPadding(dp(12), dp(6), dp(12), dp(6));
-            chip.setBackgroundResource(android.R.drawable.editbox_background);
+            chip.setGravity(Gravity.CENTER);
+            chip.setPadding(dp(16), dp(8), dp(16), dp(8));
             chip.setTag(Integer.valueOf(idx));
-            chip.setTextColor(activeCategory == idx ? 0xFF2563EB : 0xFF334155);
+            styleChip(chip, activeCategory == idx);
             chip.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     activeCategory = idx;
                     applyFilters();
                 }
             });
-            chipRow.addView(chip);
+            LinearLayout.LayoutParams lpChip = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            lpChip.rightMargin = dp(8);
+            chipRow.addView(chip, lpChip);
         }
         chipScroll.addView(chipRow, new ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -255,22 +272,23 @@ public class MainActivity extends Activity {
 
         /* ---- status row ---- */
         statusLabel = new TextView(this);
-        statusLabel.setTextColor(0xFF64748B);
+        statusLabel.setTextColor(C_SUB);
         statusLabel.setTextSize(12);
-        statusLabel.setPadding(dp(16), dp(8), dp(16), 0);
+        statusLabel.setPadding(dp(16), dp(10), dp(16), 0);
         root.addView(statusLabel, new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
         /* ---- list ---- */
         listView = new ListView(this);
         listView.setDivider(null);
-        listView.setPadding(0, dp(6), 0, dp(12));
-        listView.setBackgroundColor(0xFFF1F5F9);
+        listView.setPadding(0, dp(4), 0, dp(12));
+        listView.setClipToPadding(false);
+        listView.setBackgroundColor(C_BG);
         listView.setAdapter(new GameAdapter());
 
         progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
         progressBar.setMax(100);
-        progressBar.setProgressTintList(android.content.res.ColorStateList.valueOf(0xFF2563EB));
+        progressBar.setProgressTintList(android.content.res.ColorStateList.valueOf(C_ACCENT));
         progressBar.setVisibility(View.GONE);
 
         LinearLayout listWrap = new LinearLayout(this);
@@ -367,7 +385,7 @@ public class MainActivity extends Activity {
             if (!(c instanceof TextView)) continue;
             Object tag = c.getTag();
             int idx = (tag instanceof Integer) ? (Integer) tag : -1;
-            ((TextView) c).setTextColor(activeCategory == idx ? 0xFF2563EB : 0xFF334155);
+            styleChip((TextView) c, activeCategory == idx);
         }
     }
 
@@ -488,6 +506,53 @@ public class MainActivity extends Activity {
         return Math.round(v * getResources().getDisplayMetrics().density);
     }
 
+    private GradientDrawable roundRect(int color, int radiusDp) {
+        GradientDrawable g = new GradientDrawable();
+        g.setColor(color);
+        g.setCornerRadius(dp(radiusDp));
+        return g;
+    }
+
+    private TextView headerIcon(String t) {
+        TextView b = new TextView(this);
+        b.setText(t);
+        b.setTextColor(0xFFFFFFFF);
+        b.setTextSize(22);
+        b.setGravity(Gravity.CENTER);
+        b.setBackground(roundRect(0x33FFFFFF, 20));
+        b.setPadding(dp(13), dp(5), dp(13), dp(5));
+        return b;
+    }
+
+    private void styleChip(TextView chip, boolean active) {
+        if (active) {
+            GradientDrawable g = new GradientDrawable(
+                GradientDrawable.Orientation.TL_BR, new int[]{C_HDR1, 0xFF0891B2});
+            g.setCornerRadius(dp(24));
+            chip.setBackground(g);
+            chip.setTextColor(0xFFFFFFFF);
+            chip.setTypeface(null, android.graphics.Typeface.BOLD);
+        } else {
+            GradientDrawable g = roundRect(0xFF1E293B, 24);
+            g.setStroke(dp(1), 0xFF2E3D57);
+            chip.setBackground(g);
+            chip.setTextColor(C_SUB);
+            chip.setTypeface(null, android.graphics.Typeface.NORMAL);
+        }
+    }
+
+    private void roundImage(final ImageView iv, final int radiusDp) {
+        iv.setBackground(roundRect(0xFF2A3A5C, radiusDp));
+        if (Build.VERSION.SDK_INT >= 21) {
+            iv.setClipToOutline(true);
+            iv.setOutlineProvider(new ViewOutlineProvider() {
+                @Override public void getOutline(View view, Outline outline) {
+                    outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), dp(radiusDp));
+                }
+            });
+        }
+    }
+
     private static class HorizontalScrollViewWrap extends android.widget.HorizontalScrollView {
         public HorizontalScrollViewWrap(Context c) { super(c); }
     }
@@ -503,28 +568,29 @@ public class MainActivity extends Activity {
 
             LinearLayout row = new LinearLayout(MainActivity.this);
             row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setGravity(android.view.Gravity.CENTER_VERTICAL);
-            row.setPadding(dp(12), dp(6), dp(12), dp(6));
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.setBackground(roundRect(0xFF1E293B, 16));
+            row.setPadding(dp(10), dp(10), dp(12), dp(10));
 
-            int h = (int) Math.min(dp(140), row_dp());
-            int w = (int) (h * 1.78f);
+            int h = (int) Math.min(dp(118), row_dp());
+            int w = (int) (h * 0.72f);
 
             ImageView cover = new ImageView(MainActivity.this);
             cover.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            roundImage(cover, 12);
             Bitmap bm = loadCover(g);
             if (bm != null) cover.setImageBitmap(bm);
-            else cover.setBackgroundColor(0xFFE2E8F0);
             LinearLayout.LayoutParams lpCover = new LinearLayout.LayoutParams(w, h);
             row.addView(cover, lpCover);
 
             LinearLayout info = new LinearLayout(MainActivity.this);
             info.setOrientation(LinearLayout.VERTICAL);
-            info.setPadding(dp(12), 0, dp(6), 0);
-            info.setGravity(android.view.Gravity.CENTER_VERTICAL);
+            info.setPadding(dp(12), 0, dp(4), 0);
+            info.setGravity(Gravity.CENTER_VERTICAL);
 
             TextView t = new TextView(MainActivity.this);
             t.setText(g.title);
-            t.setTextColor(0xFF0F172A);
+            t.setTextColor(0xFFFFFFFF);
             t.setTextSize(16);
             t.setTypeface(null, android.graphics.Typeface.BOLD);
             t.setMaxLines(1);
@@ -536,27 +602,51 @@ public class MainActivity extends Activity {
             if (meta.isEmpty() && g.genre != null) meta = g.genre;
             TextView m = new TextView(MainActivity.this);
             m.setText(meta);
-            m.setTextColor(0xFF64748B);
+            m.setTextColor(C_SUB);
             m.setTextSize(13);
             m.setMaxLines(1);
             info.addView(m);
 
+            LinearLayout tagRow = new LinearLayout(MainActivity.this);
+            tagRow.setOrientation(LinearLayout.HORIZONTAL);
+            tagRow.setPadding(0, dp(7), 0, 0);
             if (g.genre != null && !g.genre.isEmpty()) {
                 TextView gen = new TextView(MainActivity.this);
                 gen.setText(g.genre);
-                gen.setTextColor(0xFF2563EB);
+                gen.setTextColor(C_ACCENT);
                 gen.setTextSize(12);
-                gen.setMaxLines(1);
-                info.addView(gen);
+                gen.setBackground(roundRect(0x1A38BDF8, 12));
+                gen.setPadding(dp(10), dp(4), dp(10), dp(4));
+                tagRow.addView(gen);
             }
+            if (g.featured) {
+                TextView hot = new TextView(MainActivity.this);
+                hot.setText("★ Öne Çıkan");
+                hot.setTextColor(0xFFFFD166);
+                hot.setTextSize(12);
+                hot.setBackground(roundRect(0x33FFD166, 12));
+                hot.setPadding(dp(10), dp(4), dp(10), dp(4));
+                LinearLayout.LayoutParams lpHot = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                lpHot.leftMargin = dp(6);
+                tagRow.addView(hot, lpHot);
+            }
+            if (tagRow.getChildCount() > 0) info.addView(tagRow);
+
             row.addView(info, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
 
             TextView arrow = new TextView(MainActivity.this);
             arrow.setText("›");
-            arrow.setTextColor(0xFF94A3B8);
+            arrow.setTextColor(0xFF475569);
             arrow.setTextSize(28);
-            arrow.setPadding(dp(6), 0, dp(4), 0);
+            arrow.setPadding(dp(4), 0, 0, 0);
             row.addView(arrow);
+
+            LinearLayout.LayoutParams lpRow = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            lpRow.topMargin = dp(6);
+            lpRow.bottomMargin = dp(6);
+            row.setLayoutParams(lpRow);
 
             row.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) { openDetail(g); }

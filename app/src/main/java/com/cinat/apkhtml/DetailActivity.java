@@ -5,12 +5,15 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Outline;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,11 +28,27 @@ import java.io.InputStream;
 public class DetailActivity extends Activity {
 
     private static final String SITE_BASE = "https://cinat3140-rgb.github.io/apkhtml/#/oyun/";
+
+    /* ---- tema ---- */
+    private static final int C_BG     = 0xFF0F172A;
+    private static final int C_CARD   = 0xFF1E293B;
+    private static final int C_ACCENT = 0xFF38BDF8;
+    private static final int C_TITLE  = 0xFFFFFFFF;
+    private static final int C_SUB    = 0xFF94A3B8;
+    private static final int C_MUTED  = 0xFF64748B;
+    private static final int C_BTN1   = 0xFF10B981;
+    private static final int C_BTN2   = 0xFF0D9488;
+
     private MainActivity.Game game;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            getWindow().setStatusBarColor(C_BG);
+            getWindow().setNavigationBarColor(C_BG);
+        }
 
         String json = getIntent().getStringExtra("game_json");
         game = new MainActivity.Game();
@@ -52,9 +71,10 @@ public class DetailActivity extends Activity {
 
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(Color.rgb(241, 245, 249));
+        root.setBackgroundColor(C_BG);
 
         ScrollView scroll = new ScrollView(this);
+        scroll.setBackgroundColor(C_BG);
         LinearLayout content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding(dp(0), 0, dp(0), dp(24));
@@ -62,9 +82,10 @@ public class DetailActivity extends Activity {
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         /* ---- cover banner ---- */
+        FrameLayoutWrap banner = new FrameLayoutWrap(this);
         ImageView cover = new ImageView(this);
         cover.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        cover.setBackgroundColor(Color.rgb(226, 232, 240));
+        cover.setBackgroundColor(Color.rgb(30, 41, 59));
         Bitmap bm = null;
         String coverUrl = game.coverUrl;
         if (coverUrl != null && !coverUrl.isEmpty()) {
@@ -81,8 +102,29 @@ public class DetailActivity extends Activity {
         }
         if (bm == null) bm = loadCover();
         if (bm != null) cover.setImageBitmap(bm);
-        content.addView(cover, new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, dp(190)));
+        banner.addView(cover, new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, dp(200)));
+
+        GradientDrawable scrim = new GradientDrawable(
+            GradientDrawable.Orientation.TOP_BOTTOM,
+            new int[]{0x00000000, 0xCC0F172A});
+        banner.setBackground(scrim);
+
+        TextView badge = new TextView(this);
+        badge.setText(game.genre != null && !game.genre.isEmpty() ? game.genre : "APK");
+        badge.setTextColor(0xFFFFFFFF);
+        badge.setTextSize(12);
+        badge.setBackground(roundRect(0xCC1D4ED8, 14));
+        badge.setPadding(dp(12), dp(5), dp(12), dp(5));
+        badge.setGravity(Gravity.CENTER);
+        FrameLayoutWrap.LayoutParams lpBadge = new FrameLayoutWrap.LayoutParams(
+            FrameLayoutWrap.LayoutParams.WRAP_CONTENT, FrameLayoutWrap.LayoutParams.WRAP_CONTENT);
+        lpBadge.gravity = Gravity.BOTTOM | Gravity.END;
+        lpBadge.setMargins(0, 0, dp(16), dp(16));
+        banner.addView(badge, lpBadge);
+
+        content.addView(banner, new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, dp(200)));
 
         /* ---- title block ---- */
         LinearLayout titleBox = new LinearLayout(this);
@@ -91,7 +133,7 @@ public class DetailActivity extends Activity {
 
         TextView title = new TextView(this);
         title.setText(game.title == null ? "Başlıksız" : game.title);
-        title.setTextColor(Color.rgb(15, 23, 42));
+        title.setTextColor(C_TITLE);
         title.setTextSize(25);
         title.setTypeface(null, android.graphics.Typeface.BOLD);
         titleBox.addView(title);
@@ -99,17 +141,17 @@ public class DetailActivity extends Activity {
         if (game.developer != null && !game.developer.isEmpty()) {
             TextView dev = new TextView(this);
             dev.setText(game.developer);
-            dev.setTextColor(Color.rgb(100, 116, 139));
+            dev.setTextColor(C_SUB);
             dev.setTextSize(14);
             titleBox.addView(dev);
         }
 
         LinearLayout tagRow = new LinearLayout(this);
         tagRow.setOrientation(LinearLayout.HORIZONTAL);
-        tagRow.setPadding(0, dp(8), 0, 0);
-        if (game.genre != null && !game.genre.isEmpty()) tagRow.addView(tag(game.genre));
+        tagRow.setPadding(0, dp(10), 0, 0);
         if (game.androidVer != null && !game.androidVer.isEmpty()) tagRow.addView(tag("Android " + game.androidVer));
         if (game.version != null && !game.version.isEmpty()) tagRow.addView(tag("v" + game.version));
+        if (game.size > 0) tagRow.addView(tag(fmtBytes(game.size)));
         titleBox.addView(tagRow);
 
         content.addView(titleBox);
@@ -121,8 +163,11 @@ public class DetailActivity extends Activity {
         siteBtn.setTextSize(17);
         siteBtn.setTypeface(null, android.graphics.Typeface.BOLD);
         siteBtn.setGravity(Gravity.CENTER);
-        siteBtn.setBackgroundColor(Color.rgb(16, 185, 129));
-        siteBtn.setPadding(dp(16), dp(14), dp(16), dp(14));
+        GradientDrawable btnBg = new GradientDrawable(
+            GradientDrawable.Orientation.TL_BR, new int[]{C_BTN1, C_BTN2});
+        btnBg.setCornerRadius(dp(16));
+        siteBtn.setBackground(btnBg);
+        siteBtn.setPadding(dp(16), dp(15), dp(16), dp(15));
         siteBtn.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 String siteUrl = SITE_BASE + game.id;
@@ -136,7 +181,7 @@ public class DetailActivity extends Activity {
         });
         LinearLayout.LayoutParams lpBtn = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        lpBtn.setMargins(dp(18), dp(8), dp(18), dp(4));
+        lpBtn.setMargins(dp(18), dp(12), dp(18), dp(4));
         content.addView(siteBtn, lpBtn);
 
         /* ---- description ---- */
@@ -144,9 +189,9 @@ public class DetailActivity extends Activity {
             content.addView(sectionTitle("Hakkında"));
             TextView desc = new TextView(this);
             desc.setText(game.description);
-            desc.setTextColor(Color.rgb(71, 85, 105));
+            desc.setTextColor(C_SUB);
             desc.setTextSize(15);
-            desc.setLineSpacing(4, 1);
+            desc.setLineSpacing(5, 1);
             desc.setPadding(dp(18), dp(4), dp(18), dp(6));
             content.addView(desc);
         }
@@ -165,8 +210,10 @@ public class DetailActivity extends Activity {
                 ImageView iv = new ImageView(this);
                 iv.setImageBitmap(s);
                 iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                iv.setPadding(dp(3), 0, dp(3), 0);
-                shotRow.addView(iv, new LinearLayout.LayoutParams(dp(190), dp(107)));
+                roundImage(iv);
+                LinearLayout.LayoutParams lpShot = new LinearLayout.LayoutParams(dp(190), dp(110));
+                lpShot.rightMargin = dp(8);
+                shotRow.addView(iv, lpShot);
             }
             shotScroll.addView(shotRow);
             content.addView(shotScroll, new LinearLayout.LayoutParams(
@@ -194,13 +241,13 @@ public class DetailActivity extends Activity {
     private TextView tag(String txt) {
         TextView t = new TextView(this);
         t.setText(txt);
-        t.setTextColor(Color.rgb(37, 99, 235));
+        t.setTextColor(C_ACCENT);
         t.setTextSize(12);
-        t.setBackgroundColor(Color.rgb(238, 242, 255));
-        t.setPadding(dp(10), dp(5), dp(10), dp(5));
+        t.setBackground(roundRect(0xFF11273F, 14));
+        t.setPadding(dp(10), dp(6), dp(10), dp(6));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        lp.rightMargin = dp(6);
+        lp.rightMargin = dp(8);
         t.setLayoutParams(lp);
         return t;
     }
@@ -208,18 +255,18 @@ public class DetailActivity extends Activity {
     private TextView sectionTitle(String txt) {
         TextView t = new TextView(this);
         t.setText(txt);
-        t.setTextColor(Color.rgb(30, 41, 59));
-        t.setTextSize(17);
+        t.setTextColor(C_TITLE);
+        t.setTextSize(18);
         t.setTypeface(null, android.graphics.Typeface.BOLD);
-        t.setPadding(dp(18), dp(16), dp(18), dp(4));
+        t.setPadding(dp(18), dp(20), dp(18), dp(4));
         return t;
     }
 
     private LinearLayout card() {
         LinearLayout c = new LinearLayout(this);
         c.setOrientation(LinearLayout.VERTICAL);
-        c.setBackgroundColor(Color.WHITE);
-        c.setPadding(dp(18), dp(14), dp(18), dp(14));
+        c.setBackground(roundRect(C_CARD, 16));
+        c.setPadding(dp(18), dp(16), dp(18), dp(16));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         lp.setMargins(dp(18), dp(4), dp(18), dp(8));
@@ -230,20 +277,42 @@ public class DetailActivity extends Activity {
     private LinearLayout infoRow(String k, String v) {
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.HORIZONTAL);
-        row.setPadding(0, dp(4), 0, dp(4));
+        row.setPadding(0, dp(6), 0, dp(6));
         TextView kk = new TextView(this);
         kk.setText(k);
-        kk.setTextColor(Color.rgb(100, 116, 139));
+        kk.setTextColor(C_MUTED);
         kk.setTextSize(14);
         kk.setMaxLines(1);
         row.addView(kk, new LinearLayout.LayoutParams(dp(110), LinearLayout.LayoutParams.WRAP_CONTENT));
         TextView vv = new TextView(this);
         vv.setText(v == null || v.isEmpty() ? "—" : v);
-        vv.setTextColor(Color.rgb(15, 23, 42));
+        vv.setTextColor(C_TITLE);
         vv.setTextSize(14);
         vv.setMaxLines(2);
         row.addView(vv, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
         return row;
+    }
+
+    private GradientDrawable roundRect(int color, int radiusDp) {
+        GradientDrawable g = new GradientDrawable();
+        g.setColor(color);
+        g.setCornerRadius(dp(radiusDp));
+        return g;
+    }
+
+    private void roundImage(final ImageView iv) {
+        if (Build.VERSION.SDK_INT >= 21) {
+            iv.setClipToOutline(true);
+            iv.setOutlineProvider(new ViewOutlineProvider() {
+                @Override public void getOutline(View view, Outline outline) {
+                    outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), dp(14));
+                }
+            });
+        }
+    }
+
+    private static class FrameLayoutWrap extends android.widget.FrameLayout {
+        public FrameLayoutWrap(android.content.Context c) { super(c); }
     }
 
     private Bitmap loadCover() {
@@ -284,7 +353,7 @@ public class DetailActivity extends Activity {
         if ("roblox".equals(t)) return "roblox";
         if ("pokemongo".equals(t)) return "pokemon-go";
         if ("asphalt9".equals(t)) return "asphalt-9";
-        if ("8ballpool".equals(t) || "8ballpool".equals(title.toLowerCase().replace(" ", ""))) return "8ball-pool";
+        if ("8ballpool".equals(t)) return "8ball-pool";
         if ("templerun".equals(t)) return "temple-run";
         return null;
     }
