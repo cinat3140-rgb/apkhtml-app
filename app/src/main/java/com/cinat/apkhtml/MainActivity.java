@@ -4,8 +4,10 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -59,6 +61,7 @@ import java.util.concurrent.Executors;
 public class MainActivity extends Activity {
 
     private static final String CATALOG_URL = "https://cinat3140-rgb.github.io/apkhtml/catalog.json";
+    private static final String CATALOG_BASE = "https://cinat3140-rgb.github.io/apkhtml/";
 
     /* ---- tema ---- */
     private static final int C_BG    = 0xFF0F172A;
@@ -72,6 +75,35 @@ public class MainActivity extends Activity {
 
     private List<Game> games = new ArrayList<>();
     private List<Game> filtered = new ArrayList<>();
+
+    public static class AppUpdateInfo {
+        public String version;
+        public String notes;
+        public String downloadUrl;
+
+        public AppUpdateInfo(String version, String notes, String downloadUrl) {
+            this.version = version;
+            this.notes = notes;
+            this.downloadUrl = downloadUrl;
+        }
+    }
+
+    private AppUpdateInfo onlineUpdate;
+    private AppUpdateInfo embeddedUpdate;
+    private LinearLayout updateBanner;
+    private TextView updateTitle;
+    private TextView updateNote;
+    private long updateDownloadId = -1;
+    private final BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (!DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(intent.getAction())) return;
+            long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            if (id != updateDownloadId || id == -1) return;
+            updateDownloadId = -1;
+            openInstaller(id);
+        }
+    };
 
     private LinearLayout root;
     private EditText searchInput;
@@ -145,7 +177,7 @@ public class MainActivity extends Activity {
         root.setBackgroundColor(C_BG);
 
         if (Build.VERSION.SDK_INT >= 21) {
-            getWindow().setStatusBarColor(C_HDR1);
+            getWindow().setStatusBarColor(0xFF1E3A8A);
             getWindow().setNavigationBarColor(C_BG);
         }
 
@@ -153,10 +185,15 @@ public class MainActivity extends Activity {
         LinearLayout header = new LinearLayout(this);
         header.setOrientation(LinearLayout.HORIZONTAL);
         header.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        header.setPadding(dp(16), dp(14), dp(10), dp(14));
+        header.setPadding(dp(16), dp(18), dp(10), dp(18));
         GradientDrawable headerBg = new GradientDrawable(
-            GradientDrawable.Orientation.TL_BR, new int[]{C_HDR1, C_HDR2});
+            GradientDrawable.Orientation.TL_BR, new int[]{0xFF1E3A8A, 0xFF0891B2, 0xFF0C4A6E});
+        headerBg.setCornerRadii(new float[]{0, 0, 0, 0, dp(24), dp(24), dp(24), dp(24)});
         header.setBackground(headerBg);
+        if (Build.VERSION.SDK_INT >= 21) {
+            header.setElevation(dp(6));
+            header.setClipToOutline(false);
+        }
 
         ImageView logo = new ImageView(this);
         logo.setImageResource(R.drawable.splash_logo);
@@ -201,6 +238,50 @@ public class MainActivity extends Activity {
         root.addView(header, new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
+        /* ---- update banner ---- */
+        updateBanner = new LinearLayout(this);
+        updateBanner.setOrientation(LinearLayout.HORIZONTAL);
+        updateBanner.setGravity(Gravity.CENTER_VERTICAL);
+        updateBanner.setPadding(dp(16), dp(12), dp(12), dp(12));
+        GradientDrawable updateBg = new GradientDrawable(
+            GradientDrawable.Orientation.TL_BR, new int[]{0xFF064E3B, 0xFF047857, 0xFF0C4A6E});
+        updateBanner.setBackground(updateBg);
+        updateBanner.setVisibility(View.GONE);
+
+        LinearLayout updateText = new LinearLayout(this);
+        updateText.setOrientation(LinearLayout.VERTICAL);
+        updateText.setGravity(Gravity.CENTER_VERTICAL);
+        updateTitle = new TextView(this);
+        updateTitle.setTextColor(0xFFFFFFFF);
+        updateTitle.setTextSize(15);
+        updateTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+        updateText.addView(updateTitle);
+        updateNote = new TextView(this);
+        updateNote.setTextColor(0xCCFFFFFF);
+        updateNote.setTextSize(12);
+        updateNote.setMaxLines(2);
+        updateText.addView(updateNote);
+        updateBanner.addView(updateText, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+
+        TextView updateBtn = new TextView(this);
+        updateBtn.setText("Güncelle");
+        updateBtn.setTextColor(0xFF052E16);
+        updateBtn.setTextSize(14);
+        updateBtn.setTypeface(null, android.graphics.Typeface.BOLD);
+        updateBtn.setGravity(Gravity.CENTER);
+        updateBtn.setBackground(roundRect(0xFFFFFFFF, 20));
+        updateBtn.setPadding(dp(18), dp(9), dp(18), dp(9));
+        updateBtn.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { startAppUpdate(); }
+        });
+        LinearLayout.LayoutParams lpUpdBtn = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lpUpdBtn.leftMargin = dp(10);
+        updateBanner.addView(updateBtn, lpUpdBtn);
+
+        root.addView(updateBanner, new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
         /* ---- search row ---- */
         LinearLayout searchRow = new LinearLayout(this);
         searchRow.setOrientation(LinearLayout.HORIZONTAL);
@@ -208,7 +289,7 @@ public class MainActivity extends Activity {
         searchRow.setPadding(dp(16), dp(14), dp(16), 0);
 
         searchInput = new EditText(this);
-        searchInput.setHint("Oyun ara… (ör. Among Us)");
+        searchInput.setHint("🔍  Oyun ara… (ör. Among Us)");
         searchInput.setSingleLine(true);
         searchInput.setTextSize(15);
         searchInput.setTextColor(0xFFFFFFFF);
@@ -302,7 +383,15 @@ public class MainActivity extends Activity {
 
         setContentView(root);
 
+        registerReceiver(downloadReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+
         loadCatalog();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try { unregisterReceiver(downloadReceiver); } catch (Exception ignored) {}
     }
 
     /* ---------- data loading ---------- */
@@ -356,6 +445,7 @@ public class MainActivity extends Activity {
             @Override public int compare(Game a, Game b) { return b.popularity - a.popularity; }
         });
         applyFilters();
+        applyUpdate(online != null ? onlineUpdate : embeddedUpdate);
     }
 
     private void applyFilters() {
@@ -397,6 +487,7 @@ public class MainActivity extends Activity {
             InputStream is = getAssets().open("catalog.json");
             String json = readAll(is);
             JSONObject obj = new JSONObject(json);
+            embeddedUpdate = parseUpdate(obj.optJSONObject("appUpdate"));
             JSONArray arr = obj.optJSONArray("games");
             if (arr != null) for (int i = 0; i < arr.length(); i++) {
                 Game g = parseGame(arr.getJSONObject(i));
@@ -420,6 +511,7 @@ public class MainActivity extends Activity {
             if (c.getResponseCode() == 200) {
                 String json = readAll(c.getInputStream());
                 JSONObject obj = new JSONObject(json);
+                onlineUpdate = parseUpdate(obj.optJSONObject("appUpdate"));
                 JSONArray arr = obj.optJSONArray("games");
                 if (arr != null) for (int i = 0; i < arr.length(); i++) {
                     Game g = parseGame(arr.getJSONObject(i));
@@ -569,7 +661,14 @@ public class MainActivity extends Activity {
             LinearLayout row = new LinearLayout(MainActivity.this);
             row.setOrientation(LinearLayout.HORIZONTAL);
             row.setGravity(Gravity.CENTER_VERTICAL);
-            row.setBackground(roundRect(0xFF1E293B, 16));
+            if (g.featured) {
+                GradientDrawable gd = roundRect(0xFF22304F, 16);
+                gd.setStroke(dp(1), 0x66FFD166);
+                gd.setCornerRadius(dp(16));
+                row.setBackground(gd);
+            } else {
+                row.setBackground(roundRect(0xFF1E293B, 16));
+            }
             row.setPadding(dp(10), dp(10), dp(12), dp(10));
 
             int h = (int) Math.min(dp(118), row_dp());
@@ -698,6 +797,102 @@ public class MainActivity extends Activity {
         Intent i = new Intent(this, DetailActivity.class);
         i.putExtra("game_json", g.toJson());
         startActivity(i);
+    }
+
+    /* ---------- app update ---------- */
+
+    private AppUpdateInfo parseUpdate(JSONObject o) {
+        if (o == null) return null;
+        String v = o.optString("version");
+        if (v == null || v.isEmpty()) return null;
+        String notes = o.optString("notes");
+        String url = o.optString("downloadUrl");
+        if (url == null || url.isEmpty()) return null;
+        return new AppUpdateInfo(v, notes, url.startsWith("http")
+            ? url : CATALOG_BASE + url.replaceFirst("^\\.?/", ""));
+    }
+
+    private void applyUpdate(AppUpdateInfo u) {
+        if (updateBanner == null) return;
+        if (u == null) { updateBanner.setVisibility(View.GONE); return; }
+        String current = currentVersionName();
+        if (current != null && !isNewerVersion(u.version, current)) {
+            updateBanner.setVisibility(View.GONE);
+            return;
+        }
+        updateTitle.setText("ApkHTML v" + u.version + " yayınlandı");
+        updateNote.setText(u.notes == null || u.notes.isEmpty() ? "Yeni sürümü kurarak güncel kal." : u.notes);
+        updateBanner.setVisibility(View.VISIBLE);
+    }
+
+    private String currentVersionName() {
+        try {
+            return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private boolean isNewerVersion(String latest, String current) {
+        String[] a = latest.split("\\.");
+        String[] b = current.split("\\.");
+        int n = Math.max(a.length, b.length);
+        for (int i = 0; i < n; i++) {
+            int x = i < a.length ? parseIntSafe(a[i]) : 0;
+            int y = i < b.length ? parseIntSafe(b[i]) : 0;
+            if (x > y) return true;
+            if (x < y) return false;
+        }
+        return false;
+    }
+
+    private int parseIntSafe(String s) {
+        try { return Integer.parseInt(s.trim()); } catch (Exception e) { return 0; }
+    }
+
+    private void startAppUpdate() {
+        if (updateDownloadId != -1) {
+            Toast.makeText(this, "İndirme zaten başlatıldı.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        AppUpdateInfo u = onlineUpdate != null ? onlineUpdate : embeddedUpdate;
+        if (u == null) return;
+        try {
+            DownloadManager.Request r = new DownloadManager.Request(Uri.parse(u.downloadUrl));
+            r.setMimeType("application/vnd.android.package-archive");
+            r.setDestinationInExternalFilesDir(this, Environment.DIRECTORY_DOWNLOADS, "apkhtml-update.apk");
+            r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+            r.setTitle("ApkHTML v" + u.version);
+            r.setDescription("Güncelleme indiriliyor…");
+            DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+            updateDownloadId = dm.enqueue(r);
+            Toast.makeText(this, "Güncelleme indiriliyor…", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "İndirme başlatılamadı: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void openInstaller(long id) {
+        DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+        Uri uri = null;
+        try { uri = dm.getUriForDownloadedFile(id); } catch (Exception ignored) {}
+        if (uri == null) {
+            File f = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "apkhtml-update.apk");
+            if (f.exists() && Build.VERSION.SDK_INT < 24) {
+                uri = Uri.fromFile(f);
+            } else if (f.exists()) {
+                Toast.makeText(this, "İndirme tamamlandı. Bildirimden kurulumu başlatın.", Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(uri, "application/vnd.android.package-archive");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } catch (Exception e) {
+            Toast.makeText(this, "Kurulum başlatılamadı: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     /* ---------- misc ---------- */
